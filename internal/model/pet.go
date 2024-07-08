@@ -1,9 +1,9 @@
 package model
 
 type Pet struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Species string `json:"species"`
-	Age     int    `json:"age"`
-	Adopted bool   `json:"adopted"`
+	ID    uint   `gorm:"primary_key"`
+	Name  string `json:"name"`
+	Breed string `json:"breed"`
+	Age   int    `json:"age"`
+	Type  string `json:"type"`
 }

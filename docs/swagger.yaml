@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   handler.ErrorResponse:
     properties:
@@ -7,23 +6,19 @@ definitions:
     type: object
   model.Pet:
     properties:
-      adopted:
-        type: boolean
       age:
         type: integer
+      breed:
+        type: string
       id:
         type: integer
       name:
         type: string
-      species:
+      type:
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
-  description: This is a sample server for matching pets.
-  title: Pet Matching Service API
-  version: "1.0"
 paths:
   /pets:
     get:
@@ -120,6 +115,35 @@ paths:
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
       summary: Get a pet by ID
+      tags:
+      - pets
+  /pets/type:
+    get:
+      description: Get a list of pets by type
+      parameters:
+      - description: Pet Type
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Pet'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get pets by type
       tags:
       - pets
 swagger: "2.0"

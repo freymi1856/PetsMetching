@@ -25,6 +25,10 @@ func (s *PetService) GetAllPets() ([]model.Pet, error) {
 	return s.repo.GetAllPets()
 }
 
+func (s *PetService) GetPetsByType(petType string) ([]model.Pet, error) {
+	return s.repo.GetPetsByType(petType)
+}
+
 func (s *PetService) DeletePet(id int) error {
 	return s.repo.DeletePet(id)
 }
