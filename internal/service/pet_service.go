@@ -6,10 +6,10 @@ import (
 )
 
 type PetService struct {
-	repo repository.PetRepository
+	repo *repository.PetRepository
 }
 
-func NewPetService(repo repository.PetRepository) *PetService {
+func NewPetService(repo *repository.PetRepository) *PetService {
 	return &PetService{repo: repo}
 }
 
@@ -21,7 +21,7 @@ func (s *PetService) GetPetByID(id int) (*model.Pet, error) {
 	return s.repo.GetPetByID(id)
 }
 
-func (s *PetService) GetAllPets() ([]*model.Pet, error) {
+func (s *PetService) GetAllPets() ([]model.Pet, error) {
 	return s.repo.GetAllPets()
 }
 

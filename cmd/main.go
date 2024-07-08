@@ -1,12 +1,13 @@
 package main
 
 import (
-	_ "pet-matching-service/docs" // Импорт для Swagger
+	_ "pet-matching-service/docs"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
+	"pet-matching-service/internal/database"
 	"pet-matching-service/internal/handler"
 	"pet-matching-service/internal/repository"
 	"pet-matching-service/internal/service"
@@ -19,12 +20,15 @@ import (
 // @BasePath /
 
 func main() {
+	database.Init()
+	defer database.Close()
+
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	repo := repository.NewInMemoryPetRepository()
+	repo := repository.NewPetRepository(database.DB)
 	svc := service.NewPetService(repo)
 	h := handler.NewPetHandler(svc)
 
@@ -35,8 +39,8 @@ func main() {
 	// @Produce json
 	// @Param pet body model.Pet true "New pet"
 	// @Success 201 {object} model.Pet
-	// @Failure 400 {object} echo.HTTPError
-	// @Failure 500 {object} echo.HTTPError
+	// @Failure 400 {object} ErrorResponse
+	// @Failure 500 {object} ErrorResponse
 	// @Router /pets [post]
 	e.GET("/pets/:id", h.GetPetByID) // @Summary Get a pet by ID
 	// @Description Get details of a pet by ID
@@ -44,26 +48,26 @@ func main() {
 	// @Produce json
 	// @Param id path int true "Pet ID"
 	// @Success 200 {object} model.Pet
-	// @Failure 400 {object} echo.HTTPError
-	// @Failure 404 {object} echo.HTTPError
+	// @Failure 400 {object} ErrorResponse
+	// @Failure 404 {object} ErrorResponse
 	// @Router /pets/{id} [get]
 	e.GET("/pets", h.GetAllPets) // @Summary List all pets
 	// @Description Get a list of all pets
 	// @Tags pets
 	// @Produce json
 	// @Success 200 {array} model.Pet
-	// @Failure 500 {object} echo.HTTPError
+	// @Failure 500 {object} ErrorResponse
 	// @Router /pets [get]
 	e.DELETE("/pets/:id", h.DeletePet) // @Summary Delete a pet
 	// @Description Delete a pet by ID
 	// @Tags pets
 	// @Param id path int true "Pet ID"
 	// @Success 204
-	// @Failure 400 {object} echo.HTTPError
-	// @Failure 404 {object} echo.HTTPError
+	// @Failure 400 {object} ErrorResponse
+	// @Failure 404 {object} ErrorResponse
 	// @Router /pets/{id} [delete]
 
-	e.GET("/swagger/*", echoSwagger.WrapHandler) // Маршрут для Swagger
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
