@@ -1,56 +1,41 @@
 package repository
 
 import (
-	"fmt"
 	"pet-matching-service/internal/model"
+
+	"github.com/jinzhu/gorm"
 )
 
-type PetRepository interface {
-	CreatePet(pet *model.Pet) error
-	GetPetByID(id int) (*model.Pet, error)
-	GetAllPets() ([]*model.Pet, error)
-	DeletePet(id int) error
+type PetRepository struct {
+	db *gorm.DB
 }
 
-type InMemoryPetRepository struct {
-	pets   map[int]*model.Pet
-	nextID int
+func NewPetRepository(db *gorm.DB) *PetRepository {
+	return &PetRepository{db: db}
 }
 
-func NewInMemoryPetRepository() *InMemoryPetRepository {
-	return &InMemoryPetRepository{
-		pets:   make(map[int]*model.Pet),
-		nextID: 1,
+func (r *PetRepository) CreatePet(pet *model.Pet) error {
+	return r.db.Create(pet).Error
+}
+
+func (r *PetRepository) GetPetByID(id int) (*model.Pet, error) {
+	var pet model.Pet
+	err := r.db.First(&pet, id).Error
+	if err != nil {
+		return nil, err
 	}
+	return &pet, nil
 }
 
-func (r *InMemoryPetRepository) CreatePet(pet *model.Pet) error {
-	pet.ID = r.nextID
-	r.nextID++
-	r.pets[pet.ID] = pet
-	return nil
-}
-
-func (r *InMemoryPetRepository) GetPetByID(id int) (*model.Pet, error) {
-	pet, exists := r.pets[id]
-	if !exists {
-		return nil, fmt.Errorf("pet not found")
-	}
-	return pet, nil
-}
-
-func (r *InMemoryPetRepository) GetAllPets() ([]*model.Pet, error) {
-	pets := make([]*model.Pet, 0, len(r.pets))
-	for _, pet := range r.pets {
-		pets = append(pets, pet)
+func (r *PetRepository) GetAllPets() ([]model.Pet, error) {
+	var pets []model.Pet
+	err := r.db.Find(&pets).Error
+	if err != nil {
+		return nil, err
 	}
 	return pets, nil
 }
 
-func (r *InMemoryPetRepository) DeletePet(id int) error {
-	if _, exists := r.pets[id]; !exists {
-		return fmt.Errorf("pet not found")
-	}
-	delete(r.pets, id)
-	return nil
+func (r *PetRepository) DeletePet(id int) error {
+	return r.db.Delete(&model.Pet{}, id).Error
 }
