@@ -1,13 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server for matching pets.",
-        "title": "Pet Matching Service API",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/",
     "paths": {
         "/pets": {
             "get": {
@@ -65,6 +60,50 @@
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/model.Pet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pets/type": {
+            "get": {
+                "description": "Get a list of pets by type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pets"
+                ],
+                "summary": "Get pets by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pet Type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Pet"
+                            }
                         }
                     },
                     "400": {
@@ -169,11 +208,11 @@
         "model.Pet": {
             "type": "object",
             "properties": {
-                "adopted": {
-                    "type": "boolean"
-                },
                 "age": {
                     "type": "integer"
+                },
+                "breed": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -181,7 +220,7 @@
                 "name": {
                     "type": "string"
                 },
-                "species": {
+                "type": {
                     "type": "string"
                 }
             }

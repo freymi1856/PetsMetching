@@ -3,7 +3,7 @@ package repository
 import (
 	"pet-matching-service/internal/model"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type PetRepository struct {
@@ -30,6 +30,15 @@ func (r *PetRepository) GetPetByID(id int) (*model.Pet, error) {
 func (r *PetRepository) GetAllPets() ([]model.Pet, error) {
 	var pets []model.Pet
 	err := r.db.Find(&pets).Error
+	if err != nil {
+		return nil, err
+	}
+	return pets, nil
+}
+
+func (r *PetRepository) GetPetsByType(petType string) ([]model.Pet, error) {
+	var pets []model.Pet
+	err := r.db.Where("type = ?", petType).Find(&pets).Error
 	if err != nil {
 		return nil, err
 	}

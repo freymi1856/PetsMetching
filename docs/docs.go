@@ -88,6 +88,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/pets/type": {
+            "get": {
+                "description": "Get a list of pets by type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pets"
+                ],
+                "summary": "Get pets by type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pet Type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Pet"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/pets/{id}": {
             "get": {
                 "description": "Get details of a pet by ID",
@@ -175,11 +219,11 @@ const docTemplate = `{
         "model.Pet": {
             "type": "object",
             "properties": {
-                "adopted": {
-                    "type": "boolean"
-                },
                 "age": {
                     "type": "integer"
+                },
+                "breed": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -187,7 +231,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "species": {
+                "type": {
                     "type": "string"
                 }
             }
@@ -197,12 +241,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Pet Matching Service API",
-	Description:      "This is a sample server for matching pets.",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
