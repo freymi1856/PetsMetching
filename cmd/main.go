@@ -14,6 +14,21 @@ import (
 	"gorm.io/gorm"
 )
 
+// @title Pet Matching Service API
+// @version 1.0
+// @description This is a sample server for a pet matching service.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
+
 func main() {
 	dsn := "host=db user=user password=password dbname=petdb port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -21,11 +36,15 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&model.Pet{})
+	db.AutoMigrate(&model.Pet{}, &model.User{})
 
 	petRepo := repository.NewPetRepository(db)
 	petService := service.NewPetService(petRepo)
 	petHandler := handler.NewPetHandler(petService)
+
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -38,6 +57,11 @@ func main() {
 	e.GET("/pets", petHandler.GetAllPets)
 	e.GET("/pets/type", petHandler.GetPetsByType)
 	e.DELETE("/pets/:id", petHandler.DeletePet)
+
+	e.POST("/users/register", userHandler.RegisterUser)
+	e.POST("/users/login", userHandler.LoginUser)
+	e.DELETE("/users/:id", userHandler.DeleteUser)
+	e.GET("/users", userHandler.GetAllUsers)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
